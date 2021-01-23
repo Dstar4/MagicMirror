@@ -10,7 +10,7 @@ var config = {
 	timeFormat: 24,
 	units: "metric",
 	electronOptions: {
-		fullscreen: false,
+		fullscreen: true,
 		width: 800,
 		height: 600,
 		webPreferences: {

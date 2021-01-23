@@ -8,7 +8,10 @@
 Module.register("inspirationalquotes", {
 	// Default module config.
 	defaults: {
-		compliments: ["Don't cry because it's over, smile because it happened.", "I'm selfish, impatient and a little insecure."],
+		compliments: [
+			{ Quote: "Don't cry because it's over, smile because it happened.", Author: "Unknown" },
+			{ Quote: "I'm selfish, impatient and a little insecure.", Author: "Unknown" }
+		],
 		updateInterval: 10000,
 		remoteFile: null,
 		fadeSpeed: 4000,
