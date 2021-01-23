@@ -1,26 +1,17 @@
 /* Magic Mirror
- * Module: Compliments
+ * Module: InspirationalQuotes
  *
- * By Michael Teeuw https://michaelteeuw.nl
+ * By Daniel Starling
  * MIT Licensed.
  */
-Module.register("compliments", {
-	// Module config defaults.
+
+Module.register("inspirationalquotes", {
+	// Default module config.
 	defaults: {
-		compliments: {
-			anytime: ["Hello There!"],
-			morning: ["Good morning, handsome!", "Enjoy your day!", "How was your sleep?"],
-			afternoon: ["Hello"],
-			evening: ["Wow, you look hot!", "You look nice!"],
-			"....-01-01": ["Happy new year!"]
-		},
-		updateInterval: 30000,
+		compliments: ["Don't cry because it's over, smile because it happened.", "I'm selfish, impatient and a little insecure."],
+		updateInterval: 10000,
 		remoteFile: null,
 		fadeSpeed: 4000,
-		morningStartTime: 3,
-		morningEndTime: 12,
-		afternoonStartTime: 12,
-		afternoonEndTime: 17,
 		random: true,
 		mockDate: null
 	},
@@ -40,9 +31,12 @@ Module.register("compliments", {
 		this.lastComplimentIndex = -1;
 
 		var self = this;
+
 		if (this.config.remoteFile !== null) {
 			this.complimentFile(function (response) {
-				self.config.compliments = JSON.parse(response);
+				let data = JSON.parse(response);
+				// data = data.map(i=>i.Quote)
+				self.config.compliments = data;
 				self.updateDom();
 			});
 		}
@@ -76,7 +70,6 @@ Module.register("compliments", {
 		}
 
 		this.lastComplimentIndex = complimentIndex;
-
 		return complimentIndex;
 	},
 
@@ -86,35 +79,7 @@ Module.register("compliments", {
 	 * return compliments Array<String> - Array with compliments for the time of the day.
 	 */
 	complimentArray: function () {
-		var hour = moment().hour();
-		var date = this.config.mockDate ? this.config.mockDate : moment().format("YYYY-MM-DD");
-		var compliments;
-
-		if (hour >= this.config.morningStartTime && hour < this.config.morningEndTime && this.config.compliments.hasOwnProperty("morning")) {
-			compliments = this.config.compliments.morning.slice(0);
-		} else if (hour >= this.config.afternoonStartTime && hour < this.config.afternoonEndTime && this.config.compliments.hasOwnProperty("afternoon")) {
-			compliments = this.config.compliments.afternoon.slice(0);
-		} else if (this.config.compliments.hasOwnProperty("evening")) {
-			compliments = this.config.compliments.evening.slice(0);
-		}
-
-		if (typeof compliments === "undefined") {
-			compliments = new Array();
-		}
-
-		if (this.currentWeatherType in this.config.compliments) {
-			compliments.push.apply(compliments, this.config.compliments[this.currentWeatherType]);
-		}
-
-		compliments.push.apply(compliments, this.config.compliments.anytime);
-
-		for (var entry in this.config.compliments) {
-			if (new RegExp(entry).test(date)) {
-				compliments.push.apply(compliments, this.config.compliments[entry]);
-			}
-		}
-
-		return compliments;
+		return this.config.compliments;
 	},
 
 	/* complimentFile(callback)
@@ -161,13 +126,20 @@ Module.register("compliments", {
 	getDom: function () {
 		var wrapper = document.createElement("div");
 		wrapper.className = this.config.classes ? this.config.classes : "thin xlarge bright pre-line";
+
+		//get the quote
+		var quote = this.randomCompliment();
+		console.log(quote);
 		// get the compliment text
-		var complimentText = this.randomCompliment();
+		var complimentText = quote.Quote;
+		var authorText = `\n--${quote.Author}`;
 		// split it into parts on newline text
 		var parts = complimentText.split("\n");
 		// create a span to hold it all
 		var compliment = document.createElement("span");
+		var author = document.createElement("span");
 		// process all the parts of the compliment text
+
 		for (var part of parts) {
 			// create a text element for each part
 			compliment.appendChild(document.createTextNode(part));
@@ -175,8 +147,10 @@ Module.register("compliments", {
 			compliment.appendChild(document.createElement("BR"));
 		}
 		// remove the last break
-		compliment.lastElementChild.remove();
+		// compliment.lastElementChild.remove();
+		author.appendChild(document.createTextNode(authorText));
 		wrapper.appendChild(compliment);
+		wrapper.appendChild(author);
 
 		return wrapper;
 	},

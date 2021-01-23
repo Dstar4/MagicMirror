@@ -16,7 +16,9 @@ var defaults = {
 	port: port,
 	basePath: "/",
 	kioskmode: false,
-	electronOptions: {},
+	electronOptions: {
+		fullscreen: "false"
+	},
 	ipWhitelist: ["127.0.0.1", "::ffff:127.0.0.1", "::1"],
 
 	language: "en",
